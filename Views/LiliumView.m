@@ -116,7 +116,7 @@ static BOOL isDegreesToRadians = YES;
 		[mainLabelsStackView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor]
 	]];
 
-	[NSLayoutConstraint activateConstraints: @[
+	[NSLayoutConstraint activateConstraints:@[
 		[textFieldsStackView.topAnchor constraintEqualToAnchor: mainLabelsStackView.bottomAnchor constant: 10],
 		[textFieldsStackView.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10]
 	]];
