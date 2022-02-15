@@ -1,0 +1,8 @@
+Package: me.luki.lilium
+Name: Lilium
+Version: 0.9.0
+Architecture: iphoneos-arm
+Description: An awesome swizzled tweak using dark juju techniques
+Maintainer: Luki
+Author: Luki
+Section: Tweaks
