@@ -5,7 +5,7 @@
 
 static LiliumView *liliumView;
 
-static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
+static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 
 	Class class = cls;
 
@@ -34,13 +34,12 @@ static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
 
 @implementation SBHomeScreenViewController (Lilium)
 
-
 + (void)load {
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 
-		swizzle(self, @selector(viewDidLoad), @selector(lil_viewDidLoad));
+		swizzleOnClass(self, @selector(viewDidLoad), @selector(lil_viewDidLoad));
 
 	});
 
@@ -52,7 +51,6 @@ static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
 	[self lil_viewDidLoad];
 
 	liliumView = [LiliumView new];
-
 	[self.view addSubview: liliumView];
 
 	[NSLayoutConstraint activateConstraints:@[
@@ -63,7 +61,6 @@ static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
 	]];
 
 }
-
 
 @end
 
@@ -78,13 +75,12 @@ static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
 
 @implementation SBDockView (Lilium)
 
-
 + (void)load {
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 
-		swizzle(self, @selector(didMoveToSuperview), @selector(lil_didMoveToSuperview));
+		swizzleOnClass(self, @selector(didMoveToSuperview), @selector(lil_didMoveToSuperview));
 
 	});
 
@@ -105,10 +101,8 @@ static void swizzle(Class cls, SEL origSEL, SEL swzSEL) {
 - (void)lil_didSwipeUp {
 
 	if(liliumView.alpha == 1 || !liliumView.hidden) return;
-
 	[NSNotificationCenter.defaultCenter postNotificationName:@"fadeIn" object:nil];
 
 }
-
 
 @end
