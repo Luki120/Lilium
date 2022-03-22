@@ -133,7 +133,6 @@ static BOOL isDegreesToRadians = YES;
 
 }
 
-
 // ! Selectors
 
 - (void)didSwipeUpView {
@@ -161,7 +160,6 @@ static BOOL isDegreesToRadians = YES;
 - (void)didTapSwapButton {
 
 	isDegreesToRadians = !isDegreesToRadians;
-
 	[self checkIfRadiansOrDegrees];
 
 }
@@ -170,11 +168,9 @@ static BOOL isDegreesToRadians = YES;
 - (void)fadeIn {
 
 	self.hidden = NO;
-
 	[self animateViewWithView:self withAlpha:1 resigningFirstResponderIfNeeded:NO completion: nil];
 
 }
-
 
 // ! Logic
 
@@ -198,14 +194,11 @@ static BOOL isDegreesToRadians = YES;
 		degRadTextField.placeholder = placeholderString;
 		resultsTextField.text = resultsString;
 
-		if(degRadTextField.text.length < 1 || resultsTextField.text.length < 1)
-
-			resultsTextField.text = @"";
+		if(degRadTextField.text.length < 1 || resultsTextField.text.length < 1) resultsTextField.text = @"";
 
 	} completion: nil];
 
 }
-
 
 // ! Reusable methods
 
@@ -219,7 +212,10 @@ static BOOL isDegreesToRadians = YES;
 }
 
 
-- (void)createLabelWithLabel:(UILabel *)label alpha:(CGFloat)alpha fontSize:(CGFloat)fontSize text:(NSString *)text {
+- (void)createLabelWithLabel:(UILabel *)label
+	alpha:(CGFloat)alpha
+	fontSize:(CGFloat)fontSize
+	text:(NSString *)text {
 
 	label.alpha = alpha;
 	label.font = [UIFont italicSystemFontOfSize: fontSize];
@@ -252,7 +248,10 @@ static BOOL isDegreesToRadians = YES;
 }
 
 
-- (void)animateViewWithView:(UIView *)view withAlpha:(CGFloat)alpha resigningFirstResponderIfNeeded:(BOOL)needed completion:(void(^)(BOOL completion))completion {
+- (void)animateViewWithView:(UIView *)view
+	withAlpha:(CGFloat)alpha
+	resigningFirstResponderIfNeeded:(BOOL)needed
+	completion:(void(^)(BOOL completion))completion {
 
 	[UIView animateWithDuration:0.6 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
@@ -264,13 +263,11 @@ static BOOL isDegreesToRadians = YES;
 
 }
 
-
 // ! UITextFieldDelegate
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
 
 	theTextField = textField;
-
 	return YES;
 
 }
@@ -285,6 +282,5 @@ static BOOL isDegreesToRadians = YES;
 	return YES;
 
 }
-
 
 @end

@@ -11,7 +11,6 @@
 
 @implementation UIView (Constraints)
 
-
 - (void)pinViewToAllEdges:(UIView *)view {
 
 	view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -24,6 +23,5 @@
 	]];
 
 }
-
 
 @end
