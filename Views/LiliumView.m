@@ -25,7 +25,6 @@ static BOOL isDegreesToRadians = YES;
 - (id)init {
 
 	self = [super init];
-
 	if(!self) return nil;
 
 	[self setupViews];
@@ -59,44 +58,25 @@ static BOOL isDegreesToRadians = YES;
 
 	[self checkIfRadiansOrDegrees];
 
-	mainLabelsStackView = [UIStackView new];
-	textFieldsStackView = [UIStackView new];
-	[self createStackViewWithStackView: mainLabelsStackView withSpacing: 5];
-	[self createStackViewWithStackView: textFieldsStackView withSpacing: 10];
-	[self addSubview: mainLabelsStackView];
-	[self addSubview: textFieldsStackView];
+	mainLabelsStackView = [self createStackViewWithSpacing: 5];
+	textFieldsStackView = [self createStackViewWithSpacing: 10];
 
-	liliumMainLabel = [UILabel new];
-	formulaLabel = [UILabel new];
-	[self createLabelWithLabel:liliumMainLabel alpha:1 fontSize:18 text: calculatorString];
-	[self createLabelWithLabel:formulaLabel alpha:0.5 fontSize:10 text: formulaString];
+	liliumMainLabel = [self createLabelWithAlpha:1 fontSize:18 text: calculatorString];
+	formulaLabel = [self createLabelWithAlpha:0.5 fontSize:10 text: formulaString];
 	[mainLabelsStackView addArrangedSubview: liliumMainLabel];
 	[mainLabelsStackView addArrangedSubview: formulaLabel];
 
-	degRadTextField = [UITextField new];
-	resultsTextField = [UITextField new];
-	[self createTextFieldWithTextField:degRadTextField placeholder: placeholderString];
-	[self createTextFieldWithTextField:resultsTextField placeholder: @"Result:"];
+	degRadTextField = [self createTextFieldWithPlaceholder: placeholderString];
+	resultsTextField = [self createTextFieldWithPlaceholder: @"Result:"];
 	[textFieldsStackView addArrangedSubview: degRadTextField];
 	[textFieldsStackView addArrangedSubview: resultsTextField];
 
-	swapButton = [UIButton new];
-	dismissButton = [UIButton new];
-
-	[self createButtonWithButton:
-		swapButton
-		imageType:[UIImage systemImageNamed: @"arrow.triangle.2.circlepath"]
+	swapButton = [self createButtonWithImage:[UIImage systemImageNamed:@"arrow.triangle.2.circlepath"]
 		selector:@selector(didTapSwapButton)
 	];
-
-	[self createButtonWithButton:
-		dismissButton
-		imageType:[UIImage systemImageNamed: @"xmark"]
+	dismissButton = [self createButtonWithImage:[UIImage systemImageNamed:@"xmark"]
 		selector:@selector(didTapDismissButton)
 	];
-
-	[self addSubview: swapButton];
-	[self addSubview: dismissButton];
 
 	UISwipeGestureRecognizer *swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeUpView)];
 	swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
@@ -202,48 +182,55 @@ static BOOL isDegreesToRadians = YES;
 
 // ! Reusable methods
 
-- (void)createStackViewWithStackView:(UIStackView *)stackView withSpacing:(CGFloat)spacing {
+- (UIStackView *)createStackViewWithSpacing:(CGFloat)spacing {
 
+	UIStackView *stackView = [UIStackView new];
 	stackView.axis = UILayoutConstraintAxisVertical;
 	stackView.spacing = spacing;
 	stackView.distribution = UIStackViewDistributionFill;
 	stackView.translatesAutoresizingMaskIntoConstraints = NO;
+	[self addSubview: stackView];
+	return stackView;
 
 }
 
 
-- (void)createLabelWithLabel:(UILabel *)label
-	alpha:(CGFloat)alpha
-	fontSize:(CGFloat)fontSize
-	text:(NSString *)text {
+- (UILabel *)createLabelWithAlpha:(CGFloat)alpha fontSize:(CGFloat)fontSize text:(NSString *)text {
 
+	UILabel *label = [UILabel new];
 	label.alpha = alpha;
 	label.font = [UIFont italicSystemFontOfSize: fontSize];
 	label.text = text;
 	label.textAlignment = NSTextAlignmentCenter;
 	label.numberOfLines = 0;
+	return label;
 
 }
 
 
-- (void)createTextFieldWithTextField:(UITextField *)textField placeholder:(NSString *)thePlaceholder {
+- (UITextField *)createTextFieldWithPlaceholder:(NSString *)placeholder {
 
+	UITextField *textField = [UITextField new];
 	textField.font = [UIFont systemFontOfSize: 14];
 	textField.delegate = self;
-	textField.placeholder = thePlaceholder;
+	textField.placeholder = placeholder;
 	textField.returnKeyType = UIReturnKeyDone;
 	textField.translatesAutoresizingMaskIntoConstraints = NO;
+	return textField;
 
 }
 
 
-- (void)createButtonWithButton:(UIButton *)button imageType:(UIImage *)image selector:(SEL)selector {
+- (UIButton *)createButtonWithImage:(UIImage *)image selector:(SEL)selector {
 
+	UIButton *button = [UIButton new];
 	button.tintColor = UIColor.labelColor;
 	button.adjustsImageWhenHighlighted = NO;
 	button.translatesAutoresizingMaskIntoConstraints = NO;
-	[button setImage: image forState: UIControlStateNormal];
+	[button setImage:image forState: UIControlStateNormal];
 	[button addTarget:self action:selector forControlEvents: UIControlEventTouchUpInside];
+	[self addSubview: button];
+	return button;
 
 }
 
