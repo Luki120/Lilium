@@ -13,19 +13,20 @@
 
 ## Why
 
-* Well, the objc runtime features are great, but should also be handled with caution since it's dark juju. This should not be considered safe at all and it's mainly for myself, **SO USE WITH CAUTION, I'M NOT LIABLE FOR ANYTHING THAT MAY HAPPEN TO YOUR DEVICE DUE TO INSTALLING LILIUM, THE SOFTWARE IS PROVIDED 'AS IS'.**
+* Because the Objective-C Runtime features are great, however they should be handled with caution since it's dark juju. This should not be considered safe at all and it's mainly for myself, **SO USE WITH CAUTION, I'M NOT LIABLE FOR ANYTHING THAT MAY HAPPEN TO YOUR DEVICE DUE TO INSTALLING LILIUM, THE SOFTWARE IS PROVIDED 'AS IS'. READ THE [LICENSE](#license).**
 
 ## I want to use it
 
-* Alright, sure go ahead, this is open source software so I won't stop you. However, as it is right now it won't compile. First of all, without linking against SpringBoard & SpringBoardHome, the tweak would throw undefined symbols. One would think that linking the frameworks is enough, well it isn't. Apple added a safety check(?) so that if you aren't an 'allowed client' you can't extend classes from private frameworks in a category (which is how Lilium works), the compilation will stop and tell you exactly that. You can get around it though by just going to `$THEOS/sdks/YOUR_SDK/System/Library/PrivateFrameworks/SpringBoard.framework` and editing the .tbd file. At the very top of the list, there's the list of allowed clients, you just add the name of the tweak there and it should magically compile. Same thing for SpringBoardHome.<br>
+* Alright sure, however as it is right now it won't compile. First of all, without linking against SpringBoard & SpringBoardHome, the tweak would throw undefined symbols. One would think that linking the frameworks is enough, well it isn't. iOS devs added a safety check(?) so that if you aren't an 'allowed client' you can't extend classes from private frameworks in a category (which is how Lilium works), so the compilation will stop and tell you exactly that. You can get around it though by just going to `$THEOS/sdks/YOUR_SDK/System/Library/PrivateFrameworks/SpringBoard.framework` and edit the .tbd file. At the very top there's a list of allowed clients, you just add the name of the tweak there and it should compile. Same thing for SpringBoardHome.<br>
 Cc: Uroboro for suggesting the possibility that such list could be there.
 
 ## Contributing
 
 * Contributions are more than welcomed, but should follow this etiquette:
-* Push small commits (e.g if you changed 2 directories, commit one directory, then commit the other directory and only THEN push)
-* Keep commit titles short and then explain them in the comments or the description.
-* If you're a contributor with write access to this repository, you **should NOT** push to main branch, preferably push to a new branch and *then* create the PR.
+
+	* If you're a contributor with write access to this repository, you **should NOT** push to main branch, preferably push to a new one and *then* create the PR.
+	* Keep commit titles short and then explain them in comments or preferably in the commit description.
+	* Push small commits (e.g if you changed 2 directories, commit one directory, then commit the other directory and only THEN push)
 
 ## LICENSE
 
