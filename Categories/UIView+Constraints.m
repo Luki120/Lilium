@@ -14,12 +14,11 @@
 - (void)pinViewToAllEdges:(UIView *)view {
 
 	view.translatesAutoresizingMaskIntoConstraints = NO;
-
 	[NSLayoutConstraint activateConstraints:@[
-		[self.topAnchor constraintEqualToAnchor: view.topAnchor],
-		[self.bottomAnchor constraintEqualToAnchor: view.bottomAnchor],
-		[self.leadingAnchor constraintEqualToAnchor: view.leadingAnchor],
-		[self.trailingAnchor constraintEqualToAnchor: view.trailingAnchor]
+		[view.topAnchor constraintEqualToAnchor: self.topAnchor],
+		[view.bottomAnchor constraintEqualToAnchor: self.bottomAnchor],
+		[view.leadingAnchor constraintEqualToAnchor: self.leadingAnchor],
+		[view.trailingAnchor constraintEqualToAnchor: self.trailingAnchor]
 	]];
 
 }
