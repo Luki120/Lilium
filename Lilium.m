@@ -1,4 +1,4 @@
-#import <objc/runtime.h>
+@import ObjectiveC.runtime;
 #import "Views/LiliumView.h"
 
 
@@ -53,7 +53,7 @@ static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 	[self.view addSubview: liliumView];
 
 	[NSLayoutConstraint activateConstraints:@[
-		[liliumView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant: 30],
+		[liliumView.topAnchor constraintEqualToAnchor: self.view.safeAreaLayoutGuide.topAnchor constant: 30],
 		[liliumView.centerXAnchor constraintEqualToAnchor: self.view.centerXAnchor],
 		[liliumView.widthAnchor constraintEqualToConstant: 295],
 		[liliumView.heightAnchor constraintEqualToConstant: 130]
@@ -100,7 +100,7 @@ static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 - (void)lil_didSwipeUp {
 
 	if(liliumView.alpha == 1 || !liliumView.hidden) return;
-	[NSNotificationCenter.defaultCenter postNotificationName:@"fadeIn" object:nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:@"fadeInLiliumNotification" object:nil];
 
 }
 

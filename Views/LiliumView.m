@@ -20,6 +20,8 @@
 static UITextField *theTextField;
 static BOOL isDegreesToRadians = YES;
 
+#define π M_PI
+
 // ! Lifecycle
 
 - (id)init {
@@ -38,7 +40,7 @@ static BOOL isDegreesToRadians = YES;
 - (void)setupObservers {
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(fadeIn) name:@"fadeIn" object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(fadeIn) name:@"fadeInLiliumNotification" object:nil];
 
 }
 
@@ -93,20 +95,14 @@ static BOOL isDegreesToRadians = YES;
 
 	[NSLayoutConstraint activateConstraints:@[
 		[mainLabelsStackView.topAnchor constraintEqualToAnchor: self.topAnchor constant: 15],
-		[mainLabelsStackView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor]
-	]];
+		[mainLabelsStackView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
 
-	[NSLayoutConstraint activateConstraints:@[
 		[textFieldsStackView.topAnchor constraintEqualToAnchor: mainLabelsStackView.bottomAnchor constant: 10],
-		[textFieldsStackView.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10]
-	]];
+		[textFieldsStackView.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
 
-	[NSLayoutConstraint activateConstraints:@[
 		[swapButton.centerYAnchor constraintEqualToAnchor: liliumMainLabel.centerYAnchor],
-		[swapButton.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10]
-	]];
+		[swapButton.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
 
-	[NSLayoutConstraint activateConstraints:@[
 		[dismissButton.centerYAnchor constraintEqualToAnchor: liliumMainLabel.centerYAnchor],
 		[dismissButton.trailingAnchor constraintEqualToAnchor: self.trailingAnchor constant: -10]
 	]];
@@ -157,14 +153,14 @@ static BOOL isDegreesToRadians = YES;
 - (void)checkIfRadiansOrDegrees {
 
 	calculatorString = isDegreesToRadians ? @"Degrees to radians" : @"Radians to degrees";
-	formulaString = isDegreesToRadians ? @"Formula -> deg * π/180" : @"Formula -> rad * 180/π";
+	formulaString = isDegreesToRadians ? @"Formula ⇝ deg * π/180" : @"Formula ⇝ rad * 180/π";
 	placeholderString = [NSString stringWithFormat: @"Enter %@", isDegreesToRadians ? @"degrees:" : @"radians:"];
 
 	NSString *result = [NSString stringWithFormat: @"%@", degRadTextField.text];
 	float castedResult = [result floatValue];
 
-	NSString *degreesResult = [NSString stringWithFormat: @"%0.fº", castedResult * (180 / M_PI)];
-	NSString *radiansResult = [NSString stringWithFormat: @"%0.3f rad", castedResult * (M_PI / 180)];
+	NSString *degreesResult = [NSString stringWithFormat: @"%0.f°", castedResult * (180 / π)];
+	NSString *radiansResult = [NSString stringWithFormat: @"%0.3f rad", castedResult * (π / 180)];
 	NSString *resultsString = isDegreesToRadians ? radiansResult : degreesResult;
 
 	[UIView transitionWithView:self duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
@@ -263,9 +259,7 @@ static BOOL isDegreesToRadians = YES;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 
 	if(textField == degRadTextField) [self checkIfRadiansOrDegrees];
-
 	[textField resignFirstResponder];
-
 	return YES;
 
 }
