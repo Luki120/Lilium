@@ -1,6 +1,6 @@
 # Lilium
 
-![Lilium](https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Misc/Lilium.png)
+<img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Misc/Lilium.png" width="300">
 
 ## Features
 
