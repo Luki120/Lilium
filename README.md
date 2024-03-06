@@ -1,6 +1,6 @@
 # Lilium
 
-<img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Misc/Lilium.png" width="300">
+<img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Tweaks/SpringBoard/Lilium/Lilium.png" width="300">
 
 ## Features
 
@@ -8,17 +8,10 @@
 
 ## How to use
 
-* Slide up the dock and you should see Lilium. An activator listener could definitely be added, but I dislike dependencies so that most likely won't happen.
-* You can also dismiss it by swiping up the view.
-
-## Why
-
-* Because the Objective-C Runtime features are great, however they should be handled with caution since it's dark juju. This should not be considered safe at all and it's mainly for myself, **SO USE WITH CAUTION, I'M NOT LIABLE FOR ANYTHING THAT MAY HAPPEN TO YOUR DEVICE DUE TO INSTALLING LILIUM, THE SOFTWARE IS PROVIDED 'AS IS'. READ THE [LICENSE](#license).**
-
-## I want to use it
-
-* Alright sure, however as it is right now it won't compile. First of all, without linking against SpringBoard & SpringBoardHome, the tweak would throw undefined symbols. One would think that linking the frameworks is enough, well it isn't. iOS devs added a safety check(?) so that if you aren't an 'allowed client' you can't extend classes from private frameworks in a category (which is how Lilium works), so the compilation will stop and tell you exactly that. You can get around it though by just going to `$THEOS/sdks/YOUR_SDK/System/Library/PrivateFrameworks/SpringBoard.framework` and edit the .tbd file. At the very top there's a list of allowed clients, you just add the name of the tweak there and it should compile. Same thing for SpringBoardHome.<br>
+* As it is right now it won't compile. First of all, without linking against SpringBoard & SpringBoardHome, the tweak would throw undefined symbols. One would think that linking the frameworks is enough, well it isn't. iOS devs added a check so that if you aren't an 'allowed client' you can't extend classes from private frameworks in a category (which is how Lilium works), so the compilation will stop and tell you exactly that. You can get around it though by just going to `$THEOS/sdks/YOUR_SDK/System/Library/PrivateFrameworks/SpringBoard.framework/` and edit the `.tbd` file. At the very top there's a list of allowed clients, you just add the name of the tweak there and it should compile. Same thing for SpringBoardHome.<br>
 Cc: Uroboro for suggesting the possibility that such list could be there.
+* Slide up the dock and you should see Lilium.
+* You can also dismiss it by swiping up the view.
 
 ## Contributing
 
