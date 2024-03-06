@@ -3,7 +3,7 @@ INSTALL_TARGET_PROCESSES = SpringBoard
 
 TWEAK_NAME = Lilium
 
-Lilium_FILES = Lilium.m Categories/UIView+Constraints.m Views/LiliumView.m
+Lilium_FILES = Lilium.m $(wildcard **/*.m)
 Lilium_CFLAGS = -fobjc-arc
 Lilium_PRIVATE_FRAMEWORKS = SpringBoard SpringBoardHome
 
