@@ -1,21 +1,26 @@
 #import "LiliumView.h"
 
 
+@interface LiliumView () <UITextFieldDelegate>
+@end
+
+
 @implementation LiliumView {
 
-	UILabel *liliumMainLabel;
-	UILabel *formulaLabel;
-	UIStackView *mainLabelsStackView;
-	UIStackView *textFieldsStackView;
-	UIButton *swapButton;
-	UIButton *dismissButton;
-	UITextField *degRadTextField;
-	UITextField *resultsTextField;
-	NSString *calculatorString;
-	NSString *formulaString;
-	NSString *placeholderString;
+	UILabel *_mainLabel;
+	UIStackView *_textFieldsStackView;
+	UIButton *_swapButton;
+	UIButton *_dismissButton;
+	UITextField *_degRadTextField;
+	UITextField *_resultsTextField;
+	NSString *_mainString;
+	NSString *_formulaString;
+	NSString *_placeholderString;
 
 }
+
+static NSString *const degreesFormulaString = @"Formula ⇝ deg * π/180";
+static NSString *const radiansFormulaString = @"Formula ⇝ rad * 180/π";
 
 static UITextField *theTextField;
 static BOOL isDegreesToRadians = YES;
@@ -29,23 +34,17 @@ static BOOL isDegreesToRadians = YES;
 	self = [super init];
 	if(!self) return nil;
 
-	[self setupViews];
-	[self setupObservers];
+	[self _setupUI];
+
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(_fadeIn) name:LiliumDidFadeInNotification object:nil];
 
 	return self;
 
 }
 
+// ! Private
 
-- (void)setupObservers {
-
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(fadeIn) name:@"fadeInLiliumNotification" object:nil];
-
-}
-
-
-- (void)setupViews {
+- (void)_setupUI {
 
 	self.alpha = 0;
 	self.hidden = YES;
@@ -58,105 +57,108 @@ static BOOL isDegreesToRadians = YES;
 	[self addSubview: visualEffectView];
 	[self pinViewToAllEdges: visualEffectView];
 
-	[self checkIfRadiansOrDegrees];
+	[self _checkIfRadiansOrDegrees];
 
-	mainLabelsStackView = [self createStackViewWithSpacing: 5];
-	textFieldsStackView = [self createStackViewWithSpacing: 10];
+	if(!_mainLabel) {
+		_mainLabel = [UILabel new];
+		_mainLabel.numberOfLines = 0;
+		_mainLabel.attributedText = [[NSMutableAttributedString alloc] initWithFullString:_mainString subString: _formulaString];
+		_mainLabel.translatesAutoresizingMaskIntoConstraints = NO;
+		[self addSubview: _mainLabel];
+	}
 
-	liliumMainLabel = [self createLabelWithAlpha:1 fontSize:18 text: calculatorString];
-	formulaLabel = [self createLabelWithAlpha:0.5 fontSize:10 text: formulaString];
-	[mainLabelsStackView addArrangedSubview: liliumMainLabel];
-	[mainLabelsStackView addArrangedSubview: formulaLabel];
+	if(!_textFieldsStackView) {
+		_textFieldsStackView = [UIStackView new];
+		_textFieldsStackView.axis = UILayoutConstraintAxisVertical;
+		_textFieldsStackView.spacing = 10;
+		_textFieldsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+		[self addSubview: _textFieldsStackView];
+	}
 
-	degRadTextField = [self createTextFieldWithPlaceholder: placeholderString];
-	resultsTextField = [self createTextFieldWithPlaceholder: @"Result:"];
-	[textFieldsStackView addArrangedSubview: degRadTextField];
-	[textFieldsStackView addArrangedSubview: resultsTextField];
+	if(!_degRadTextField) _degRadTextField = [self _createTextFieldWithPlaceholder: _placeholderString];
+	if(!_resultsTextField) _resultsTextField = [self _createTextFieldWithPlaceholder: @"Result:"];
 
-	swapButton = [self createButtonWithImage:[UIImage systemImageNamed:@"arrow.triangle.2.circlepath"]
-		selector:@selector(didTapSwapButton)
+	if(!_swapButton) _swapButton = [self _createButtonWithImage:[UIImage systemImageNamed:@"arrow.triangle.2.circlepath"]
+		selector:@selector(_didTapSwapButton)
 	];
-	dismissButton = [self createButtonWithImage:[UIImage systemImageNamed:@"xmark"]
-		selector:@selector(didTapDismissButton)
+	if(!_dismissButton) _dismissButton = [self _createButtonWithImage:[UIImage systemImageNamed:@"xmark"]
+		selector:@selector(_didDismiss)
 	];
 
-	UISwipeGestureRecognizer *swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeUpView)];
+	UISwipeGestureRecognizer *swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(_didDismiss)];
 	swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
 	[self addGestureRecognizer: swipeRecognizer];
 
-	[self layoutUI];
+	[self _layoutUI];
 
 }
 
 
-- (void)layoutUI {
-
-	// :woeisFade: I still prefer the property syntax though
+- (void)_layoutUI {
 
 	[NSLayoutConstraint activateConstraints:@[
-		[mainLabelsStackView.topAnchor constraintEqualToAnchor: self.topAnchor constant: 15],
-		[mainLabelsStackView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
+		[_mainLabel.topAnchor constraintEqualToAnchor: self.topAnchor constant: 15],
+		[_mainLabel.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
 
-		[textFieldsStackView.topAnchor constraintEqualToAnchor: mainLabelsStackView.bottomAnchor constant: 10],
-		[textFieldsStackView.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
+		[_textFieldsStackView.topAnchor constraintEqualToAnchor: _mainLabel.bottomAnchor constant: 15],
+		[_textFieldsStackView.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
 
-		[swapButton.centerYAnchor constraintEqualToAnchor: liliumMainLabel.centerYAnchor],
-		[swapButton.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
+		[_swapButton.centerYAnchor constraintEqualToAnchor: _mainLabel.centerYAnchor],
+		[_swapButton.leadingAnchor constraintEqualToAnchor: self.leadingAnchor constant: 10],
 
-		[dismissButton.centerYAnchor constraintEqualToAnchor: liliumMainLabel.centerYAnchor],
-		[dismissButton.trailingAnchor constraintEqualToAnchor: self.trailingAnchor constant: -10]
+		[_dismissButton.centerYAnchor constraintEqualToAnchor: _mainLabel.centerYAnchor],
+		[_dismissButton.trailingAnchor constraintEqualToAnchor: self.trailingAnchor constant: -10]
 	]];
 
 }
 
 // ! Selectors
 
-- (void)didSwipeUpView {
+- (void)_didDismiss {
 
-	[self animateViewWithView:self withAlpha:0 resigningFirstResponderIfNeeded:YES completion:^(BOOL finished) {
+	[self _animateViewWithView:self alpha:0 completion:^(BOOL finished) {
 
 		self.hidden = YES;
 
+		_degRadTextField.text = @"";
+		_resultsTextField.text = @"";
+
 	}];
+
+	[_degRadTextField resignFirstResponder];
 
 }
 
 
-- (void)didTapDismissButton {
-
-	[self animateViewWithView:self withAlpha:0 resigningFirstResponderIfNeeded:YES completion:^(BOOL finished) {
-
-		self.hidden = YES;
-
-	}];
-
-}
-
-
-- (void)didTapSwapButton {
+- (void)_didTapSwapButton {
 
 	isDegreesToRadians = !isDegreesToRadians;
-	[self checkIfRadiansOrDegrees];
+	[self _checkIfRadiansOrDegrees];
 
 }
 
 
-- (void)fadeIn {
+- (void)_fadeIn {
 
 	self.hidden = NO;
-	[self animateViewWithView:self withAlpha:1 resigningFirstResponderIfNeeded:NO completion: nil];
+	[self _animateViewWithView:self alpha:1 completion: nil];
+
+	[_degRadTextField becomeFirstResponder];
 
 }
 
 // ! Logic
 
-- (void)checkIfRadiansOrDegrees {
+- (void)_checkIfRadiansOrDegrees {
 
-	calculatorString = isDegreesToRadians ? @"Degrees to radians" : @"Radians to degrees";
-	formulaString = isDegreesToRadians ? @"Formula ⇝ deg * π/180" : @"Formula ⇝ rad * 180/π";
-	placeholderString = [NSString stringWithFormat: @"Enter %@", isDegreesToRadians ? @"degrees:" : @"radians:"];
+	_mainString = isDegreesToRadians
+		? [@"Degrees to radians\n" stringByAppendingString: degreesFormulaString]
+		: [@"Radians to degrees\n" stringByAppendingString: radiansFormulaString];
 
-	NSString *result = [NSString stringWithFormat: @"%@", degRadTextField.text];
+	_formulaString = isDegreesToRadians ? degreesFormulaString : radiansFormulaString;
+	_placeholderString = [NSString stringWithFormat: @"Enter %@", isDegreesToRadians ? @"degrees:" : @"radians:"];
+
+	NSString *result = [NSString stringWithFormat: @"%@", _degRadTextField.text];
 	float castedResult = [result floatValue];
 
 	NSString *degreesResult = [NSString stringWithFormat: @"%0.f°", castedResult * (180 / π)];
@@ -165,46 +167,19 @@ static BOOL isDegreesToRadians = YES;
 
 	[UIView transitionWithView:self duration:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
-		liliumMainLabel.text = calculatorString;
-		formulaLabel.text = formulaString;
-		degRadTextField.placeholder = placeholderString;
-		resultsTextField.text = resultsString;
+		_mainLabel.attributedText = [[NSMutableAttributedString alloc] initWithFullString:_mainString subString: _formulaString];
+		_degRadTextField.placeholder = _placeholderString;
+		_resultsTextField.text = resultsString;
 
-		if(degRadTextField.text.length < 1 || resultsTextField.text.length < 1) resultsTextField.text = @"";
+		if(_degRadTextField.text.length < 1 || _resultsTextField.text.length < 1) _resultsTextField.text = @"";
 
 	} completion: nil];
 
 }
 
-// ! Reusable methods
+// ! Reusable
 
-- (UIStackView *)createStackViewWithSpacing:(CGFloat)spacing {
-
-	UIStackView *stackView = [UIStackView new];
-	stackView.axis = UILayoutConstraintAxisVertical;
-	stackView.spacing = spacing;
-	stackView.distribution = UIStackViewDistributionFill;
-	stackView.translatesAutoresizingMaskIntoConstraints = NO;
-	[self addSubview: stackView];
-	return stackView;
-
-}
-
-
-- (UILabel *)createLabelWithAlpha:(CGFloat)alpha fontSize:(CGFloat)fontSize text:(NSString *)text {
-
-	UILabel *label = [UILabel new];
-	label.alpha = alpha;
-	label.font = [UIFont italicSystemFontOfSize: fontSize];
-	label.text = text;
-	label.textAlignment = NSTextAlignmentCenter;
-	label.numberOfLines = 0;
-	return label;
-
-}
-
-
-- (UITextField *)createTextFieldWithPlaceholder:(NSString *)placeholder {
+- (UITextField *)_createTextFieldWithPlaceholder:(NSString *)placeholder {
 
 	UITextField *textField = [UITextField new];
 	textField.font = [UIFont systemFontOfSize: 14];
@@ -212,16 +187,16 @@ static BOOL isDegreesToRadians = YES;
 	textField.placeholder = placeholder;
 	textField.returnKeyType = UIReturnKeyDone;
 	textField.translatesAutoresizingMaskIntoConstraints = NO;
+	[_textFieldsStackView addArrangedSubview: textField];
 	return textField;
 
 }
 
 
-- (UIButton *)createButtonWithImage:(UIImage *)image selector:(SEL)selector {
+- (UIButton *)_createButtonWithImage:(UIImage *)image selector:(SEL)selector {
 
 	UIButton *button = [UIButton new];
 	button.tintColor = UIColor.labelColor;
-	button.adjustsImageWhenHighlighted = NO;
 	button.translatesAutoresizingMaskIntoConstraints = NO;
 	[button setImage:image forState: UIControlStateNormal];
 	[button addTarget:self action:selector forControlEvents: UIControlEventTouchUpInside];
@@ -231,18 +206,13 @@ static BOOL isDegreesToRadians = YES;
 }
 
 
-- (void)animateViewWithView:(UIView *)view
-	withAlpha:(CGFloat)alpha
-	resigningFirstResponderIfNeeded:(BOOL)needed
-	completion:(void(^)(BOOL completion))completion {
+- (void)_animateViewWithView:(UIView *)view alpha:(CGFloat)alpha completion:(void(^)(BOOL completion))completion {
 
 	[UIView animateWithDuration:0.6 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
 		view.alpha = alpha;
 
 	} completion: completion];
-
-	if(needed) [theTextField resignFirstResponder];
 
 }
 
@@ -258,7 +228,7 @@ static BOOL isDegreesToRadians = YES;
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 
-	if(textField == degRadTextField) [self checkIfRadiansOrDegrees];
+	if(textField == _degRadTextField) [self _checkIfRadiansOrDegrees];
 	[textField resignFirstResponder];
 	return YES;
 

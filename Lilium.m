@@ -6,19 +6,16 @@ static LiliumView *liliumView;
 
 static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 
-	Class class = cls;
-
-	SEL originalSEL = origSEL;
-	SEL swizzledSEL = swzSEL;
-
-	Method originalMethod = class_getInstanceMethod(class, originalSEL);
-	Method swizzledMethod = class_getInstanceMethod(class, swizzledSEL);
+	Method originalMethod = class_getInstanceMethod(cls, origSEL);
+	Method swizzledMethod = class_getInstanceMethod(cls, swzSEL);
 
 	IMP originalIMP = method_getImplementation(originalMethod);
 	IMP swizzledIMP = method_getImplementation(swizzledMethod);
 
-	class_replaceMethod(class, swizzledSEL, originalIMP, method_getTypeEncoding(originalMethod));
-	class_replaceMethod(class, originalSEL, swizzledIMP, method_getTypeEncoding(swizzledMethod));
+	if(class_addMethod(cls, origSEL, swizzledIMP, method_getTypeEncoding(swizzledMethod)))
+		class_replaceMethod(cls, swzSEL, originalIMP, method_getTypeEncoding(originalMethod));
+
+	else method_exchangeImplementations(originalMethod, swizzledMethod);
 
 }
 
@@ -49,7 +46,7 @@ static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 
 	[self lil_viewDidLoad];
 
-	liliumView = [LiliumView new];
+	if(!liliumView) liliumView = [LiliumView new];
 	[self.view addSubview: liliumView];
 
 	[NSLayoutConstraint activateConstraints:@[
@@ -100,7 +97,7 @@ static void swizzleOnClass(Class cls, SEL origSEL, SEL swzSEL) {
 - (void)lil_didSwipeUp {
 
 	if(liliumView.alpha == 1 || !liliumView.hidden) return;
-	[NSNotificationCenter.defaultCenter postNotificationName:@"fadeInLiliumNotification" object:nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:LiliumDidFadeInNotification object:nil];
 
 }
 
